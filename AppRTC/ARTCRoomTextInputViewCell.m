@@ -44,7 +44,7 @@
     if (isBackspace && text.length > 1) {
         text = [text substringWithRange:NSMakeRange(0, text.length-2)];
     }
-    if (text.length >= 5) {
+    if (text.length >= 3) {
         [UIView animateWithDuration:0.3f animations:^{
             [self.errorLabelHeightConstraint setConstant:0.0f];
             [self.textFieldBorderView setBackgroundColor:[UIColor colorWithRed:66.0f/255.0f green:133.0f/255.0f blue:244.0f/255.0f alpha:1.0f]];

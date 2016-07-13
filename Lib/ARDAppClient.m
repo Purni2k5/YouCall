@@ -124,10 +124,10 @@ static NSInteger kARDAppClientErrorInvalidRoom = -7;
     _serverHostUrl = kARDRoomServerHostUrl;
     _isSpeakerEnabled = YES;
       
-      [[NSNotificationCenter defaultCenter] addObserver:self
-                                               selector:@selector(orientationChanged:)
-                                                   name:@"UIDeviceOrientationDidChangeNotification"
-                                                 object:nil];
+//      [[NSNotificationCenter defaultCenter] addObserver:self
+//                                               selector:@selector(orientationChanged:)
+//                                                   name:@"UIDeviceOrientationDidChangeNotification"
+//                                                 object:nil];
   }
   return self;
 }
@@ -137,22 +137,22 @@ static NSInteger kARDAppClientErrorInvalidRoom = -7;
   [self disconnect];
 }
 
-- (void)orientationChanged:(NSNotification *)notification {
-    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
-    if (UIDeviceOrientationIsLandscape(orientation) || UIDeviceOrientationIsPortrait(orientation)) {
-        //Remove current video track
-        RTCMediaStream *localStream = _peerConnection.localStreams[0];
-        [localStream removeVideoTrack:localStream.videoTracks[0]];
-        
-        RTCVideoTrack *localVideoTrack = [self createLocalVideoTrack];
-        if (localVideoTrack) {
-            [localStream addVideoTrack:localVideoTrack];
-            [_delegate appClient:self didReceiveLocalVideoTrack:localVideoTrack];
-        }
-        [_peerConnection removeStream:localStream];
-        [_peerConnection addStream:localStream];
-    }
-}
+//- (void)orientationChanged:(NSNotification *)notification {
+//    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+//    if (UIDeviceOrientationIsLandscape(orientation) || UIDeviceOrientationIsPortrait(orientation)) {
+//        //Remove current video track
+//        RTCMediaStream *localStream = _peerConnection.localStreams[0];
+//        [localStream removeVideoTrack:localStream.videoTracks[0]];
+//        
+//        RTCVideoTrack *localVideoTrack = [self createLocalVideoTrack];
+//        if (localVideoTrack) {
+//            [localStream addVideoTrack:localVideoTrack];
+//            [_delegate appClient:self didReceiveLocalVideoTrack:localVideoTrack];
+//        }
+//        [_peerConnection removeStream:localStream];
+//        [_peerConnection addStream:localStream];
+//    }
+//}
 
 
 - (void)setState:(ARDAppClientState)state {
@@ -293,12 +293,17 @@ static NSInteger kARDAppClientErrorInvalidRoom = -7;
     NSLog(@"Received %lu video tracks and %lu audio tracks",
         (unsigned long)stream.videoTracks.count,
         (unsigned long)stream.audioTracks.count);
-    if (stream.videoTracks.count) {
-      RTCVideoTrack *videoTrack = stream.videoTracks[0];
-      [_delegate appClient:self didReceiveRemoteVideoTrack:videoTrack];
-      if (_isSpeakerEnabled) [self enableSpeaker]; //Use the "handsfree" speaker instead of the ear speaker.
-
-    }
+//    if (stream.videoTracks.count) {
+//      RTCVideoTrack *videoTrack = stream.videoTracks[0];
+//      [_delegate appClient:self didReceiveRemoteVideoTrack:videoTrack];
+//      if (_isSpeakerEnabled) [self enableSpeaker]; //Use the "handsfree" speaker instead of the ear speaker.
+//
+//    }
+      
+      if (stream.audioTracks.count) {
+          [_delegate appClient:self didReceiveRemoteVideoTrack:nil];
+      }
+      
   });
 }
 
@@ -502,11 +507,12 @@ static NSInteger kARDAppClientErrorInvalidRoom = -7;
 - (RTCMediaStream *)createLocalMediaStream {
     RTCMediaStream* localStream = [_factory mediaStreamWithLabel:@"ARDAMS"];
 
-    RTCVideoTrack *localVideoTrack = [self createLocalVideoTrack];
-    if (localVideoTrack) {
-        [localStream addVideoTrack:localVideoTrack];
-        [_delegate appClient:self didReceiveLocalVideoTrack:localVideoTrack];
-    }
+    // @hoang remove video
+//    RTCVideoTrack *localVideoTrack = [self createLocalVideoTrack];
+//    if (localVideoTrack) {
+//        [localStream addVideoTrack:localVideoTrack];
+//        [_delegate appClient:self didReceiveLocalVideoTrack:localVideoTrack];
+//    }
     
     [localStream addAudioTrack:[_factory audioTrackWithID:@"ARDAMSa0"]];
     if (_isSpeakerEnabled) [self enableSpeaker];
